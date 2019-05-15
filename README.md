@@ -1,7 +1,7 @@
 # dodrio_multi_component
 How to use dodrio vdom with multiple components?  
 # the problem
-Is the use of Rc<RefCell<AppData>> the best approach here?  
+Is the use of Rc<RefCell<<AppData>>> the best approach here?  
 # just an example
 I created a silly example.  
 In the browser there are 3 lines of text with 3 counters.  
