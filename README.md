@@ -2,10 +2,15 @@
 How to use dodrio vdom with multiple components?  
 # the question
 Is the use of `Rc<RefCell<<AppData>>>` the best approach here?  
+This means that the borrow checker is now dynamic at runtime.  
+Is there a way to have here the static borrow checker in compile time?  
 # just an example
 I created a silly example.  
-In the browser there are 3 sections of text with 3 counters.  
+In the browser there are 3 sections (components) of text with 3 counters.  
 When you click on the text, a counter is incremented.  
+This is not the counter of that section, but of another.  
+The components don't know one about the other. But the Root knows them all.  
+And all the components have access to the app_data.  
 Some of the RenderingComponents are rerendered because the cache is invalidated.  
 Other components are not rerendered.  
 # rendering components (visual components)
@@ -17,6 +22,7 @@ I splitted the web page in 3 vertical RenderingComponents:
 If I understand correctly, there must be only one vdom with only one RootRenderingComponent.  
 The RootRenderingComponent has to be moved into the vdom. So this is the only struct, that we have access from the vdom events - on click.  
 This means that this struct must have access to header, content and footer RenderComponents. The easiest way is to create them inside the RootRenderingComponent.  
+They will all need access to app_data.  
 # cache
 I use dodrio cache for components, because they will change rarely.
 
