@@ -1,9 +1,22 @@
 # dodrio_multi_component
 How to use dodrio vdom with multiple components?  
+The components must be reusable and cacheable.  
+They will always have a RootRenderingComponent above them. It is the only one who knows their relationship. The sub Components cannot know their relationship.  
+Only the Root can be used for events (on click).  
+
 # the question
 Is the use of `Rc<RefCell<<AppData>>>` the best approach here?  
 This means that the borrow checker is now dynamic at runtime.  
 Is there a way to have here the static borrow checker in compile time?  
+  
+16.05.2019 I tried to change the code following the suggestion of fitzgen:  
+https://github.com/fitzgen/dodrio/issues/78  
+But it does not allow for cache-able components because if I put a Component inside the RootComponent that has all the data and then a reference to that data. Then I get a self-referencing struct. That is not allowed in basic safe rust.  
+Maybe it can be efficient with the new construct Pin<> for self-referencing structs? 
+
+16.05.2019 I try to put cache fields inside the component. They will be copied or cloned from the app_data. Having 2 copies enables to check if anything has changed and invalidates the Render Cache. 
+It looks promising, but large copying large amounts of data can be a problem.  
+  
 # just an example
 I created a silly example.  
 In the browser there are 3 sections (components) of text with 3 counters.  
