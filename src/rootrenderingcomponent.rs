@@ -41,37 +41,42 @@ impl RootRenderingComponent {
     //RootRenderingComponent must know the relations between Components.
     //The sub Components don't know anything about their relationships.
     pub fn update_from_header(&mut self) {
-        //some change made from RootRenderingComponent
+        //some changes can be made by RootRenderingComponent
         self.app_data.description.push('x');
 
-        //some changed made by the sub RenderingComponent method
+        //other reusable changes can be made by the sub RenderingComponent
         self.header_rendering_component
             .update_counter2(&mut self.app_data);
 
+        //what components need rendering
         self.invalidate_components();
     }
 
     pub fn update_from_content(&mut self) {
-        //some change made from RootRenderingComponent
+        //some changes can be made by RootRenderingComponent
         self.app_data.author.push('y');
 
-        //some changed made by the sub RenderingComponent method
+        //other reusable changes can be made by the sub RenderingComponent
         self.content_rendering_component
             .update_counter3(&mut self.app_data);
 
+        //what components need rendering
         self.invalidate_components();
     }
 
     pub fn update_from_footer(&mut self) {
+        //some changes can be made by RootRenderingComponent
         self.app_data.title.push('z');
-        //other data is changed by the sub RenderingComponent
+
+        //other reusable changes can be made by the sub RenderingComponent
         self.footer_rendering_component
             .update_counter1(&mut self.app_data);
 
+        //what components need rendering
         self.invalidate_components();
     }
 
-    pub fn invalidate_components(&mut self) {
+    fn invalidate_components(&mut self) {
         //app_data can change any time anywhere.
         //Components must update their cached values and return true if they changed.
         if self

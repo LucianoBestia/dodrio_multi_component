@@ -20,6 +20,7 @@ Maybe it can be efficient with the new construct Pin<> for self-referencing stru
   
 16.05.2019 Another approach I try is to put cache fields inside the components. They will be copied or cloned from the app_data. Having 2 copies enables to check if anything has changed and invalidates the Render Cache. 
 It looks promising, but copying large amounts of data is not very nice.  
+I separated the code in files/modules to explore the reusability of the RenderingComponents. I see now that the subComponents must know something about the RootRenderingComponents to be able to call the update method on click. Probably this can be solved with Traits?
   
 # just an example
 I created a silly example.  
