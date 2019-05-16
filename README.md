@@ -1,3 +1,4 @@
+Things are changing fast. This is the situation on 2019-05-16. LucianoBestia  
 # dodrio_multi_component
 How to use dodrio vdom with multiple components?  
 The components must be reusable and cacheable.  
@@ -9,13 +10,16 @@ Is the use of `Rc<RefCell<<AppData>>>` the best approach here?
 This means that the borrow checker is now dynamic at runtime.  
 Is there a way to have here the static borrow checker in compile time?  
   
+# trying new approaches
+The old code is renamed to lib.rs_OldWithRcRefCell.  
+
 16.05.2019 I tried to change the code following the suggestion of fitzgen:  
 https://github.com/fitzgen/dodrio/issues/78  
-But it does not allow for cache-able components because if I put a Component inside the RootComponent that has all the data and then a reference to that data. Then I get a self-referencing struct. That is not allowed in basic safe rust.  
-Maybe it can be efficient with the new construct Pin<> for self-referencing structs? 
-
-16.05.2019 I try to put cache fields inside the component. They will be copied or cloned from the app_data. Having 2 copies enables to check if anything has changed and invalidates the Render Cache. 
-It looks promising, but large copying large amounts of data can be a problem.  
+But it does not allow for cache-able components. I cannot put a Component inside the RootComponent that has the data and then a reference to that same data. Then I get a self-referencing struct. That is not allowed in basic safe rust.  
+Maybe it can be efficient with the new construct Pin<> for self-referencing structs?  
+  
+16.05.2019 Another approach I try is to put cache fields inside the components. They will be copied or cloned from the app_data. Having 2 copies enables to check if anything has changed and invalidates the Render Cache. 
+It looks promising, but copying large amounts of data is not very nice.  
   
 # just an example
 I created a silly example.  
@@ -32,10 +36,9 @@ I splitted the web page in 3 vertical RenderingComponents:
 - content
 - footer
 # dodrio vdom - only one
-If I understand correctly, there must be only one vdom with only one RootRenderingComponent.  
-The RootRenderingComponent has to be moved into the vdom. So this is the only struct, that we have access from the vdom events - on click.  
-This means that this struct must have access to header, content and footer RenderComponents. The easiest way is to create them inside the RootRenderingComponent.  
-They will all need access to app_data.  
+If I understand correctly there must be only one vdom with only one RootRenderingComponent.
+The RootRenderingComponent has to be moved into the vdom. So this is the only struct, that we have access must have access to header, content and footer RenderComponents. The easiest way is to create them inside the RootRenderingComponent.  
+They will all need access to app_data. That data will be passed as function parameter.  
 # cache
 I use dodrio cache for components, because they will change rarely.
 
