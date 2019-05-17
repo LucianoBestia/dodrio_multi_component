@@ -1,18 +1,16 @@
 Things are changing fast. This is the situation on 2019-05-16. LucianoBestia  
 # dodrio_multi_component
 How to use dodrio vdom with multiple components?  
+In separate folders I created different approaches to the same problem.  
 The components must be reusable and cacheable.  
 They will always have a RootRenderingComponent above them. It is the only one who knows their relationship. The sub Components cannot know their relationship.  
 Only the Root can be used for events (on click).  
-
 # the question
 Is the use of `Rc<RefCell<<AppData>>>` the best approach here?  
 This means that the borrow checker is now dynamic at runtime.  
 Is there a way to have here the static borrow checker in compile time?  
   
 # trying new approaches
-The old code is renamed to lib.rs_OldWithRcRefCell.  
-
 16.05.2019 I tried to change the code following the suggestion of fitzgen:  
 https://github.com/fitzgen/dodrio/issues/78  
 But it does not allow for cache-able components. I cannot put a Component inside the RootComponent that has the data and then a reference to that same data. Then I get a self-referencing struct. That is not allowed in basic safe rust.  
@@ -44,6 +42,7 @@ They will all need access to app_data. That data will be passed as function para
 I use dodrio cache for components, because they will change rarely.
 
 # struct model (object model)
+This can vary greatly for different approach.  
 All of the RenderingComponents need to have access to the same AppData struct.  
 The events from vdom must mutate app_data.  
 The rendering itself does not mutate app_data.  
@@ -77,6 +76,7 @@ The rendering itself does not mutate app_data.
 The Makefile.toml is prepared for Windows with Chrome.  
 
 ## server and run
+Go into a subfolder for a single approach and  
 `cargo make`  
 Sometimes you need to refresh the webpage in the browser, to get the new wasm.  
 ## VSCode

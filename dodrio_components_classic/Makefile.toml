@@ -1,0 +1,44 @@
+
+[tasks.build]
+command = "wasm-pack"
+args = ["build", "--target", "web"]
+
+[tasks.post-build]
+windows_alias = "windows_run"
+linux_alias = "linux_run"
+
+[tasks.linux_run]
+#TODO:
+
+[tasks.windows_run]
+script = [
+    "start chrome http://127.0.0.1:4000/ ", 
+    "basic-http-server"
+]
+
+[tasks.pre-format]
+disabled = true
+
+[tasks.format]
+disabled = true
+
+[tasks.post-format]
+disabled = true
+
+[tasks.format-flow]
+disabled = true
+
+[tasks.pre-test]
+disabled = true
+
+[tasks.test]
+disabled = true
+
+[tasks.post-test]
+disabled = true
+
+[tasks.test-flow]
+disabled = true
+
+[tasks.pre-build]
+disabled = true
