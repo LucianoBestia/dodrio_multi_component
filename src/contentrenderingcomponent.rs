@@ -1,16 +1,22 @@
+//the Component must know about app_data because it receives it as a method parameter
+//but also app_data can change with another RootRenderingComonent.
+//TODO: how to achieve reusability ? We can send only the required fields in the fn call.
 use crate::appdata::AppData;
+//in events (on click) we have to use the RootRenderingComponent,
+//because it is the only one to be unwraped from vdom.
+//TODO: but we want be compatible with different RootRenderingComponent.
 use crate::rootrenderingcomponent::RootRenderingComponent;
-
-extern crate console_error_panic_hook;
-extern crate log;
-extern crate web_sys;
 
 use dodrio::builder::*;
 use dodrio::bumpalo::{self, Bump};
 use dodrio::{Node, Render};
 
+// cached local values are copied from app_data
+// these values are rendered in the Render method,
+// because only they are accessible from this structs methods.
+// they are used to check if the app_data has changes.
+// That invalidates the render cache.
 pub struct ContentRenderingComponent {
-    ///cached local values are copied from app_data
     description: String,
     counter2: i32,
 }
@@ -29,7 +35,6 @@ impl ContentRenderingComponent {
         app_data.counter3 += 10;
     }
     //the only place where the internal cached values are updated
-    //only internal cached values are rendered in this component
     pub fn update_cache_from_app_data(&mut self, app_data: &AppData) -> bool {
         let mut retvalue = false;
 
@@ -49,6 +54,7 @@ impl Render for ContentRenderingComponent {
     where
         'a: 'bump,
     {
+        //only internal cached values are rendered in this component
         div(bump)
             .children([h1(bump)
                 .children([text(
@@ -56,8 +62,9 @@ impl Render for ContentRenderingComponent {
                         .into_bump_str(),
                 )])
                 .on("click", move |root, vdom, _event| {
-                    //we should access only the RootRenderingComponent here. It is the only componente
-                    //that knows all the other components. A subComponent is always a part of a RootRenderingComponent.
+                    //we should access only the RootRenderingComponent here.
+                    //It is the only componente that knows about app_data and other components and their relationship.
+                    //A subComponent is always a part of a RootRenderingComponent.
                     let root_rendering_component = root.unwrap_mut::<RootRenderingComponent>();
                     root_rendering_component.update_from_content();
                     // Finally, re-render the component on the next animation frame.

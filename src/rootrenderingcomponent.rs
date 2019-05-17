@@ -1,11 +1,8 @@
+//RootRenderingComponent is the only one who really knows about app_data, the other comonents and their relationship.
 use crate::appdata::AppData;
 use crate::contentrenderingcomponent::ContentRenderingComponent;
 use crate::footerrenderingcomponent::FooterRenderingComponent;
 use crate::headerrenderingcomponent::HeaderRenderingComponent;
-
-extern crate console_error_panic_hook;
-extern crate log;
-extern crate web_sys;
 
 use dodrio::builder::*;
 use dodrio::bumpalo::Bump;
@@ -18,6 +15,7 @@ pub struct RootRenderingComponent {
     content_rendering_component: Cached<ContentRenderingComponent>,
     footer_rendering_component: Cached<FooterRenderingComponent>,
 }
+
 impl Default for RootRenderingComponent {
     fn default() -> Self {
         Self::new()
@@ -41,7 +39,7 @@ impl RootRenderingComponent {
     //RootRenderingComponent must know the relations between Components.
     //The sub Components don't know anything about their relationships.
     pub fn update_from_header(&mut self) {
-        //some changes can be made by RootRenderingComponent
+        //some non-reusable changes can be made by RootRenderingComponent
         self.app_data.description.push('x');
 
         //other reusable changes can be made by the sub RenderingComponent
@@ -53,7 +51,7 @@ impl RootRenderingComponent {
     }
 
     pub fn update_from_content(&mut self) {
-        //some changes can be made by RootRenderingComponent
+        //some non-reusable changes can be made by RootRenderingComponent
         self.app_data.author.push('y');
 
         //other reusable changes can be made by the sub RenderingComponent
@@ -65,7 +63,7 @@ impl RootRenderingComponent {
     }
 
     pub fn update_from_footer(&mut self) {
-        //some changes can be made by RootRenderingComponent
+        //some non-reusable changes can be made by RootRenderingComponent
         self.app_data.title.push('z');
 
         //other reusable changes can be made by the sub RenderingComponent
@@ -78,7 +76,8 @@ impl RootRenderingComponent {
 
     fn invalidate_components(&mut self) {
         //app_data can change any time anywhere.
-        //Components must update their cached values and return true if they changed.
+        //Components must update their cached values and return true if they changed
+        //to invalidate the Render Cache.
         if self
             .header_rendering_component
             .update_cache_from_app_data(&self.app_data)
