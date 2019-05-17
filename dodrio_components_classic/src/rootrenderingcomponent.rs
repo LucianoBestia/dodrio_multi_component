@@ -1,19 +1,27 @@
 //RootRenderingComponent is the only one who really knows about app_data, the other comonents and their relationship.
+//cannot use `dodrio::cache`. It requires the trait Render for sub Components.
+//this trait method Render doesn't allow to send `app_data` as parameter.
+//`app_data` must not be inside of the subComponent because then we have a self-referenced struct.
+//It is possible to use some other type of cache?
+
 use crate::appdata::AppData;
+use crate::contentrenderingcomponent;
 use crate::contentrenderingcomponent::ContentRenderingComponent;
+use crate::footerrenderingcomponent;
 use crate::footerrenderingcomponent::FooterRenderingComponent;
+use crate::headerrenderingcomponent;
 use crate::headerrenderingcomponent::HeaderRenderingComponent;
 
 use dodrio::builder::*;
 use dodrio::bumpalo::Bump;
-use dodrio::{Cached, Node, Render};
+use dodrio::{Node, Render};
 
 pub struct RootRenderingComponent {
     app_data: AppData,
 
-    header_rendering_component: Cached<HeaderRenderingComponent>,
-    content_rendering_component: Cached<ContentRenderingComponent>,
-    footer_rendering_component: Cached<FooterRenderingComponent>,
+    header_rendering_component: HeaderRenderingComponent,
+    content_rendering_component: ContentRenderingComponent,
+    footer_rendering_component: FooterRenderingComponent,
 }
 
 impl Default for RootRenderingComponent {
@@ -25,9 +33,9 @@ impl Default for RootRenderingComponent {
 impl RootRenderingComponent {
     pub fn new() -> Self {
         let app_data = AppData::new();
-        let header_rendering_component = Cached::new(HeaderRenderingComponent::new(&app_data));
-        let content_rendering_component = Cached::new(ContentRenderingComponent::new(&app_data));
-        let footer_rendering_component = Cached::new(FooterRenderingComponent::new(&app_data));
+        let header_rendering_component = HeaderRenderingComponent::new();
+        let content_rendering_component = ContentRenderingComponent::new();
+        let footer_rendering_component = FooterRenderingComponent::new();
 
         Self {
             app_data,
@@ -45,9 +53,6 @@ impl RootRenderingComponent {
         //other reusable changes can be made by the sub RenderingComponent
         self.header_rendering_component
             .update_counter2(&mut self.app_data);
-
-        //what components need rendering
-        self.invalidate_components();
     }
 
     pub fn update_from_content(&mut self) {
@@ -57,9 +62,6 @@ impl RootRenderingComponent {
         //other reusable changes can be made by the sub RenderingComponent
         self.content_rendering_component
             .update_counter3(&mut self.app_data);
-
-        //what components need rendering
-        self.invalidate_components();
     }
 
     pub fn update_from_footer(&mut self) {
@@ -69,33 +71,6 @@ impl RootRenderingComponent {
         //other reusable changes can be made by the sub RenderingComponent
         self.footer_rendering_component
             .update_counter1(&mut self.app_data);
-
-        //what components need rendering
-        self.invalidate_components();
-    }
-
-    fn invalidate_components(&mut self) {
-        //app_data can change any time anywhere.
-        //Components must update their cached values and return true if they changed
-        //to invalidate the Render Cache.
-        if self
-            .header_rendering_component
-            .update_cache_from_app_data(&self.app_data)
-        {
-            Cached::invalidate(&mut self.header_rendering_component);
-        }
-        if self
-            .content_rendering_component
-            .update_cache_from_app_data(&self.app_data)
-        {
-            Cached::invalidate(&mut self.content_rendering_component);
-        }
-        if self
-            .footer_rendering_component
-            .update_cache_from_app_data(&self.app_data)
-        {
-            Cached::invalidate(&mut self.footer_rendering_component);
-        }
     }
 }
 impl Render for RootRenderingComponent {
@@ -105,9 +80,9 @@ impl Render for RootRenderingComponent {
     {
         div(bump)
             .children([
-                self.header_rendering_component.render(bump),
-                self.content_rendering_component.render(bump),
-                self.footer_rendering_component.render(bump),
+                headerrenderingcomponent::render(&self.app_data, bump),
+                contentrenderingcomponent::render(&self.app_data, bump),
+                footerrenderingcomponent::render(&self.app_data, bump),
             ])
             .finish()
     }

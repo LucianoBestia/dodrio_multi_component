@@ -1,11 +1,11 @@
 //! Learning Rust Wasm/WebAssembly with Virtual Dom Dodrio.
 //! read README.md
 //! use Fold and Unfold regions to better read source code.
-//! this is the approach suggested by fitzgen 2019-05-16
-//! 'Make `AppData` be the root rendering component,'
-//! For less confusion with names I will put the fields of `AppData` inside `RootRenderingComponent`.
-//! My goal is to have reuseable components for other.
-//! On another webpage, the content can change, but the Header and Footer component are the same.  
+//! this is the classic approach
+//! cannot use `dodrio::cache`. It requires the trait Render for sub Components.
+//! this trait method Render doesn't allow to send `app_data` as parameter.
+//! `app_data` must not be inside of the subComponent because then we have a self-referenced struct.
+//! It is possible to use some other type of cache.
 
 //region: Clippy
 #![warn(
