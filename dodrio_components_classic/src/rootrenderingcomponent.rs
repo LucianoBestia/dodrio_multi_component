@@ -12,7 +12,7 @@ use crate::footerrenderingcomponent::FooterRenderingComponent;
 use crate::headerrenderingcomponent;
 use crate::headerrenderingcomponent::HeaderRenderingComponent;
 
-use dodrio::{bumpalo, Node, Render, RenderContext};
+use dodrio::{Node, Render, RenderContext};
 
 pub struct RootRenderingComponent {
     app_data: AppData,
@@ -72,14 +72,14 @@ impl RootRenderingComponent {
     }
 }
 impl Render for RootRenderingComponent {
-    fn render<'a>(&'a self, cx: &mut RenderContext<'a>) -> Node<'a>
-    {
-         use dodrio::builder::*;
-        div(bump)
+    fn render<'a>(&self, cx: &mut RenderContext<'a>) -> Node<'a> {
+        use dodrio::builder::div;
+        //TODO: don't know how to use cache ???
+        div(&cx)
             .children([
-                headerrenderingcomponent::render(&self.app_data, bump),
-                contentrenderingcomponent::render(&self.app_data, bump),
-                footerrenderingcomponent::render(&self.app_data, bump),
+                headerrenderingcomponent::render(&self.app_data, cx),
+                contentrenderingcomponent::render(&self.app_data, cx),
+                footerrenderingcomponent::render(&self.app_data, cx),
             ])
             .finish()
     }

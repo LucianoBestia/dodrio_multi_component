@@ -5,9 +5,7 @@ use crate::appdata::AppData;
 //TODO: but we want be compatible with different RootRenderingComponent.
 use crate::rootrenderingcomponent::RootRenderingComponent;
 
-use dodrio::builder::*;
-use dodrio::bumpalo::{self, Bump};
-use dodrio::Node;
+use dodrio::{bumpalo, Node, RenderContext};
 
 #[derive(Default)]
 pub struct HeaderRenderingComponent {}
@@ -23,15 +21,14 @@ impl HeaderRenderingComponent {
 //cannot implement trait Render, because then it has not access to app_data
 //I will make it a simple function,
 //but so I loose the possiblity of dodrio::cache
-pub fn render<'a, 'bump>(app_data: &'a AppData, bump: &'bump Bump) -> Node<'bump>
-where
-    'a: 'bump,
-{
+
+pub fn render<'a>(app_data: &AppData, cx: &mut RenderContext<'a>) -> Node<'a> {
+    use dodrio::builder::*;
     //only internal cached values are rendered in this component
-    div(bump)
-        .children([h1(bump)
+    div(&cx)
+        .children([h1(&cx)
             .children([text(
-                bumpalo::format!(in bump, "click on me: {} {}", app_data.title,app_data.counter1)
+                bumpalo::format!(in cx.bump, "click on me: {} {}", app_data.title,app_data.counter1)
                     .into_bump_str(),
             )])
             .on("click", move |root, vdom, _event| {

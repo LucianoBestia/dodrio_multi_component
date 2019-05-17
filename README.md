@@ -1,4 +1,5 @@
 Things are changing fast. This is the situation on 2019-05-16. LucianoBestia  
+2019-05-17 copied the dodrio code from GitHub, to have new features - RenderContext
 # dodrio_multi_component
 How to use dodrio vdom with multiple components?  
 The components must be reusable and cacheable. Think about Header and Footer.  
