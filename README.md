@@ -1,35 +1,33 @@
 Things are changing fast. This is the situation on 2019-05-16. LucianoBestia  
 # dodrio_multi_component
 How to use dodrio vdom with multiple components?  
-The components must be reusable and cacheable.  
-They will always have a RootRenderingComponent above them. It is the only one who knows their relationship. The sub Components cannot know their relationship.  
+The components must be reusable and cacheable. Think about Header and Footer.  
+They will always have a RootRenderingComponent above them. It is the only one who knows the relationships between subComponents. The subComponents cannot know their relationship.  
+For now there is only one level of nesting components. More then that becomes complicated.  
 Only the Root can be used for events (on click).  
-In separate folders I created different approaches to the same problem:  
-- classic (not good for reuse)
-- Rc RefCell (good reuse, but runtime borrow checker)
-- cached local values (good reuse, but copying data for cache)
+Rust does not have true OOP, so the approach must be different. There is a concept of modules in Rust, that isolates the code and data.  
+Separate *.rs files are automatically separate modules.  
+# different approaches
+In separate folders I created different working approaches to the same problem:  
+- classic (good reuse, not good for dodrio::cache, maybe another cache?)
+- Rc RefCell (good reuse+cache, but runtime borrow checker)
+- cached local values (good reuse+cache, but copying data for cached values)
 - ??maybe Pin<> for self-referencing struct?
-
-# the question
-Is the use of `Rc<RefCell<<AppData>>>` the best approach here?  
-This means that the borrow checker is now dynamic at runtime.  
-Is there a way to have here the static borrow checker in compile time?  
-  
-# trying new approaches
-16.05.2019 I tried to change the code following the suggestion of fitzgen:  
-https://github.com/fitzgen/dodrio/issues/78  
-But it does not allow for cache-able components. I cannot put a Component inside the RootComponent that has the data and then a reference to that same data. Then I get a self-referencing struct. That is not allowed in basic safe rust.  
-Maybe it can be efficient with the new construct Pin<> for self-referencing structs?  
-  
-16.05.2019 Another approach I try is to put cache fields inside the components. They will be copied or cloned from the app_data. Having 2 copies enables to check if anything has changed and invalidates the Render Cache. 
+## classic
+It works well until I want to use dodrio::cache. This needs the Render trait. The Render function cannot accept the app_data parameter. Maybe using a different type of cache? Dodrio::cache is not the final version, I think.  
+## Rc RefCell
+Use of Rc RefCell means that the borrow checker is now dynamic at runtime.  
+That is not ideal.  
+## cached values
+Cached values inside Components are copied or cloned from the app_data. Having 2 copies enables to check if anything has changed and invalidates the Render Cache.  
 It looks promising, but copying large amounts of data is not very nice.  
-I separated the code in files/modules to explore the reusability of the RenderingComponents. I see now that the subComponents must know something about the RootRenderingComponents to be able to call the update method on click. Probably this can be solved with Traits?
-  
+## maybe Pin<>?
+This is a new thing and needs a little bit of research.  
 # just an example
 I created a silly example.  
 In the browser there are 3 sections (components) of text with 3 counters.  
 When you click on the text, a counter is incremented.  
-This is not the counter of that section, but of another.  
+This is not the counter of that section, but of another. So we have a complicated subComponents relationship.  
 The components don't know one about the other. But the Root knows them all.  
 And all the components have access to the app_data.  
 Some of the RenderingComponents are rerendered because the cache is invalidated.  
