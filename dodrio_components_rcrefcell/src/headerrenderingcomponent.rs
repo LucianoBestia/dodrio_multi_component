@@ -1,6 +1,4 @@
-//the Component must know about app_data because it receives it as a method parameter
-//but also app_data can change with another RootRenderingComonent.
-//TODO: how to achieve reusability ? We can send only the required fields in the fn call.
+//the Component has a shared mutable reference to AppData
 use crate::appdata::AppData;
 //in events (on click) we have to use the RootRenderingComponent,
 //because it is the only one to be unwraped from vdom.
@@ -10,42 +8,22 @@ use crate::rootrenderingcomponent::RootRenderingComponent;
 use dodrio::builder::*;
 use dodrio::bumpalo::{self, Bump};
 use dodrio::{Node, Render};
+use std::cell::RefCell;
+use std::rc::Rc;
 
-// cached local values are copied from app_data
-// these values are rendered in the Render method,
-// because only they are accessible from this structs methods.
-// they are used to check if the app_data has changes.
-// That invalidates the render cache.
 pub struct HeaderRenderingComponent {
-    title: String,
-    counter1: i32,
+    ///shared mutable data
+    pub rc_app_data: Rc<RefCell<AppData>>,
 }
 impl HeaderRenderingComponent {
-    pub fn new(app_data: &AppData) -> Self {
+    pub const fn new(rc_app_data: Rc<RefCell<AppData>>) -> Self {
         //default values
-        let mut header = Self {
-            title: "".to_string(),
-            counter1: 0,
-        };
-        header.update_cache_from_app_data(app_data);
-        header
+        Self { rc_app_data }
     }
     //updates only app_data
-    pub fn update_counter2(&self, app_data: &mut AppData) {
+    pub fn update_counter2(&self) {
+        let mut app_data = self.rc_app_data.borrow_mut();
         app_data.counter2 += 100;
-    }
-    //the only place where the internal cached values are updated
-    pub fn update_cache_from_app_data(&mut self, app_data: &AppData) -> bool {
-        let mut retvalue = false;
-        if self.title != app_data.title {
-            self.title = app_data.title.clone();
-            retvalue = true;
-        }
-        if self.counter1 != app_data.counter1 {
-            self.counter1 = app_data.counter1;
-            retvalue = true;
-        }
-        retvalue
     }
 }
 impl Render for HeaderRenderingComponent {
@@ -53,11 +31,11 @@ impl Render for HeaderRenderingComponent {
     where
         'a: 'bump,
     {
-        //only internal cached values are rendered in this component
+        let app_data = self.rc_app_data.borrow();
         div(bump)
             .children([h1(bump)
                 .children([text(
-                    bumpalo::format!(in bump, "click on me: {} {}", self.title,self.counter1)
+                    bumpalo::format!(in bump, "click on me: {} {}", app_data.title,app_data.counter1)
                         .into_bump_str(),
                 )])
                 .on("click", move |root, vdom, _event| {

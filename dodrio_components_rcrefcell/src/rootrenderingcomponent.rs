@@ -7,13 +7,15 @@ use crate::headerrenderingcomponent::HeaderRenderingComponent;
 use dodrio::builder::*;
 use dodrio::bumpalo::Bump;
 use dodrio::{Cached, Node, Render};
+use std::cell::RefCell;
+use std::rc::Rc;
 
 pub struct RootRenderingComponent {
-    app_data: AppData,
-
-    header_rendering_component: Cached<HeaderRenderingComponent>,
-    content_rendering_component: Cached<ContentRenderingComponent>,
-    footer_rendering_component: Cached<FooterRenderingComponent>,
+    pub header_rendering_component: Cached<HeaderRenderingComponent>,
+    pub content_rendering_component: Cached<ContentRenderingComponent>,
+    pub footer_rendering_component: Cached<FooterRenderingComponent>,
+    ///shared mutable data
+    pub rc_app_data: Rc<RefCell<AppData>>,
 }
 
 impl Default for RootRenderingComponent {
@@ -25,77 +27,62 @@ impl Default for RootRenderingComponent {
 impl RootRenderingComponent {
     pub fn new() -> Self {
         let app_data = AppData::new();
-        let header_rendering_component = Cached::new(HeaderRenderingComponent::new(&app_data));
-        let content_rendering_component = Cached::new(ContentRenderingComponent::new(&app_data));
-        let footer_rendering_component = Cached::new(FooterRenderingComponent::new(&app_data));
+        let rc_app_data = Rc::new(RefCell::new(app_data));
+        let header_rendering_component = Cached::new(HeaderRenderingComponent {
+            rc_app_data: Rc::<std::cell::RefCell<AppData>>::clone(&rc_app_data),
+        });
+        let content_rendering_component = Cached::new(ContentRenderingComponent {
+            rc_app_data: Rc::<std::cell::RefCell<AppData>>::clone(&rc_app_data),
+        });
+        let footer_rendering_component = Cached::new(FooterRenderingComponent {
+            rc_app_data: Rc::<std::cell::RefCell<AppData>>::clone(&rc_app_data),
+        });
 
         Self {
-            app_data,
             header_rendering_component,
             content_rendering_component,
             footer_rendering_component,
+            rc_app_data,
         }
     }
     //RootRenderingComponent must know the relations between Components.
     //The sub Components don't know anything about their relationships.
     pub fn update_from_header(&mut self) {
         //some non-reusable changes can be made by RootRenderingComponent
-        self.app_data.description.push('x');
+        {
+            let mut app_data = self.rc_app_data.borrow_mut();
+            app_data.description.push('x');
+        }
+        // some reusable changes by the sub RenderingComponent
+        self.header_rendering_component.update_counter2();
 
-        //other reusable changes can be made by the sub RenderingComponent
-        self.header_rendering_component
-            .update_counter2(&mut self.app_data);
-
-        //what components need rendering
-        self.invalidate_components();
+        //invalidated another component:
+        Cached::invalidate(&mut self.content_rendering_component);
     }
 
     pub fn update_from_content(&mut self) {
         //some non-reusable changes can be made by RootRenderingComponent
-        self.app_data.author.push('y');
+        {
+            let mut app_data = self.rc_app_data.borrow_mut();
+            app_data.author.push('y');
+        }
+        //some reusable changes by the sub RenderingComponent
+        self.content_rendering_component.update_counter3();
 
-        //other reusable changes can be made by the sub RenderingComponent
-        self.content_rendering_component
-            .update_counter3(&mut self.app_data);
-
-        //what components need rendering
-        self.invalidate_components();
+        //invalidated another component for rerendering
+        Cached::invalidate(&mut self.footer_rendering_component);
     }
 
     pub fn update_from_footer(&mut self) {
         //some non-reusable changes can be made by RootRenderingComponent
-        self.app_data.title.push('z');
-
-        //other reusable changes can be made by the sub RenderingComponent
-        self.footer_rendering_component
-            .update_counter1(&mut self.app_data);
-
-        //what components need rendering
-        self.invalidate_components();
-    }
-
-    fn invalidate_components(&mut self) {
-        //app_data can change any time anywhere.
-        //Components must update their cached values and return true if they changed
-        //to invalidate the Render Cache.
-        if self
-            .header_rendering_component
-            .update_cache_from_app_data(&self.app_data)
         {
-            Cached::invalidate(&mut self.header_rendering_component);
+            let mut app_data = self.rc_app_data.borrow_mut();
+            app_data.title.push('z');
         }
-        if self
-            .content_rendering_component
-            .update_cache_from_app_data(&self.app_data)
-        {
-            Cached::invalidate(&mut self.content_rendering_component);
-        }
-        if self
-            .footer_rendering_component
-            .update_cache_from_app_data(&self.app_data)
-        {
-            Cached::invalidate(&mut self.footer_rendering_component);
-        }
+        //some reusable changes by the sub RenderingComponent
+        self.footer_rendering_component.update_counter1();
+        //invalidated another component for rerendering
+        Cached::invalidate(&mut self.header_rendering_component);
     }
 }
 impl Render for RootRenderingComponent {

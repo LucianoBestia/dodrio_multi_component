@@ -8,17 +8,17 @@ use crate::rootrenderingcomponent::RootRenderingComponent;
 use dodrio::builder::*;
 use dodrio::bumpalo::{self, Bump};
 use dodrio::{Node, Render};
+use std::cell::RefCell;
+use std::rc::Rc;
 
 pub struct ContentRenderingComponent {
     ///shared mutable data
-    rc_app_data: Rc<RefCell<AppData>>
+    pub rc_app_data: Rc<RefCell<AppData>>,
 }
 impl ContentRenderingComponent {
-    pub fn new(rc_app_data: Rc<RefCell<AppData>>) -> Self {
+    pub const fn new(rc_app_data: Rc<RefCell<AppData>>) -> Self {
         //default values
-        Self{
-            rc_app_data
-        }
+        Self { rc_app_data }
     }
     //updates only app_data
     pub fn update_counter3(&self) {
@@ -36,7 +36,7 @@ impl Render for ContentRenderingComponent {
         div(bump)
             .children([h1(bump)
                 .children([text(
-                    bumpalo::format!(in bump, "click on me: {} {}", self.description,self.counter2)
+                    bumpalo::format!(in bump, "click on me: {} {}", app_data.description,app_data.counter2)
                         .into_bump_str(),
                 )])
                 .on("click", move |root, vdom, _event| {

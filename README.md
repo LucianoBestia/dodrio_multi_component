@@ -1,10 +1,15 @@
 Things are changing fast. This is the situation on 2019-05-16. LucianoBestia  
 # dodrio_multi_component
 How to use dodrio vdom with multiple components?  
-In separate folders I created different approaches to the same problem.  
 The components must be reusable and cacheable.  
 They will always have a RootRenderingComponent above them. It is the only one who knows their relationship. The sub Components cannot know their relationship.  
 Only the Root can be used for events (on click).  
+In separate folders I created different approaches to the same problem:  
+- classic (not good for reuse)
+- Rc RefCell (good reuse, but runtime borrow checker)
+- cached local values (good reuse, but copying data for cache)
+- ??maybe Pin<> for self-referencing struct?
+
 # the question
 Is the use of `Rc<RefCell<<AppData>>>` the best approach here?  
 This means that the borrow checker is now dynamic at runtime.  
