@@ -15,7 +15,7 @@ crate-type = ["cdylib"]
 
 
 [dependencies]
-dodrio = "0.1.0"
+dodrio =  { path = "../dodrio" }
 wasm-bindgen = { version = "0.2.43" }
 console_error_panic_hook = "0.1.6"
 js-sys = "0.3"

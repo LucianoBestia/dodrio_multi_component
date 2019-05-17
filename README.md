@@ -8,6 +8,7 @@ Only the Root can be used for events (on click).
 Rust does not have true OOP, so the approach must be different. There is a concept of modules in Rust, that isolates the code and data.  
 Separate *.rs files are automatically separate modules.  
 # different approaches
+Now I found the RenderContext that I have to explore for this solution.  
 In separate folders I created different working approaches to the same problem:  
 - classic (good reuse, not good for dodrio::cache, maybe another cache?)
 - Rc RefCell (good reuse+cache, but runtime borrow checker)

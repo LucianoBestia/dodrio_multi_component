@@ -1,0 +1,23 @@
+[package]
+authors = ["Nick Fitzgerald <fitzgen@gmail.com>"]
+categories = ["wasm", "web-programming"]
+description = "An API for implementing Dodrio rendering components with JavaScript"
+edition = "2018"
+keywords = ["javascript", "js", "vdom", "virtual-dom"]
+license = "MPL-2.0"
+name = "dodrio-js-api"
+repository = "https://github.com/fitzgen/dodrio"
+version = "0.1.0"
+
+[badges]
+travis-ci = { repository = "fitzgen/dodrio" }
+
+[dependencies]
+dodrio = { version = "=0.1.0", path = "../.." }
+wasm-bindgen = "0.2.42"
+js-sys = "0.3.19"
+wasm-bindgen-futures = "0.3.19"
+futures = "0.1.27"
+
+[dev-dependencies]
+wasm-bindgen-test = "0.2.42"

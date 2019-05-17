@@ -12,9 +12,7 @@ use crate::footerrenderingcomponent::FooterRenderingComponent;
 use crate::headerrenderingcomponent;
 use crate::headerrenderingcomponent::HeaderRenderingComponent;
 
-use dodrio::builder::*;
-use dodrio::bumpalo::Bump;
-use dodrio::{Node, Render};
+use dodrio::{bumpalo, Node, Render, RenderContext};
 
 pub struct RootRenderingComponent {
     app_data: AppData,
@@ -74,10 +72,9 @@ impl RootRenderingComponent {
     }
 }
 impl Render for RootRenderingComponent {
-    fn render<'a, 'bump>(&'a self, bump: &'bump Bump) -> Node<'bump>
-    where
-        'a: 'bump,
+    fn render<'a>(&'a self, cx: &mut RenderContext<'a>) -> Node<'a>
     {
+         use dodrio::builder::*;
         div(bump)
             .children([
                 headerrenderingcomponent::render(&self.app_data, bump),
