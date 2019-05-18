@@ -9,12 +9,11 @@ Only the Root can be used for events (on click).
 Rust does not have true OOP, so the approach must be different. There is a concept of modules in Rust, that isolates the code and data.  
 Separate *.rs files are automatically separate modules.  
 # different approaches
-Now I found the RenderContext that I have to explore for this solution.  
 In separate folders I created different working approaches to the same problem:  
 - classic (good reuse, not good for dodrio::cache, maybe another cache?)
 - Rc RefCell (good reuse+cache, but runtime borrow checker)
 - cached local values (good reuse+cache, but copying data for cached values)
-- ??maybe Pin<> for self-referencing struct?
+- ??maybe Pin<> for self-referencing struct? (I don't know how to do it)
 ## classic
 It works well until I want to use dodrio::cache. This needs the Render trait. The Render function cannot accept the app_data parameter. Maybe using a different type of cache? Dodrio::cache is not the final version, I think.  
 ## Rc RefCell
@@ -24,7 +23,7 @@ That is not ideal.
 Cached values inside Components are copied or cloned from the app_data. Having 2 copies enables to check if anything has changed and invalidates the Render Cache.  
 It looks promising, but copying large amounts of data is not very nice.  
 ## maybe Pin<>?
-This is a new thing and needs a little bit of research.  
+This is a new thing and needs a little bit of research. I don't know how to do it  
 # just an example
 I created a silly example.  
 In the browser there are 3 sections (components) of text with 3 counters.  
