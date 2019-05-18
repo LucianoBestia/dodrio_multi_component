@@ -1,5 +1,5 @@
 Things are changing fast. This is the situation on 2019-05-16. LucianoBestia  
-2019-05-17 copied the dodrio code from GitHub, to have new features - RenderContext
+2019-05-17 copied the dodrio code from GitHub into the project, to have new features - RenderContext
 # dodrio_multi_component
 How to use dodrio vdom with multiple components?  
 The components must be reusable and cacheable. Think about Header and Footer.  
@@ -24,6 +24,14 @@ Cached values inside Components are copied or cloned from the app_data. Having 2
 It looks promising, but copying large amounts of data is not very nice.  
 ## maybe Pin<>?
 This is a new thing and needs a little bit of research. I don't know how to do it  
+## ideas
+- A single arena for all the data?? All have the same lifetime.
+- Making 'static mutable Mutex? As global data?
+- There are strange crates for workarounds around self-referencing:  
+https://github.com/diwic/refstruct-rs  
+https://github.com/Kimundi/owning-ref-rs  
+https://github.com/jpernst/rental  
+- For every small change there is a mountain of refactoring to do. Lifetimes are the worst.  
 # just an example
 I created a silly example.  
 In the browser there are 3 sections (components) of text with 3 counters.  
