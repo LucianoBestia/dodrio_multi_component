@@ -28,7 +28,7 @@ pub fn render<'a>(app_data: &AppData, cx: &mut RenderContext<'a>) -> Node<'a> {
     div(&cx)
         .children([h1(&cx)
             .children([text(
-                bumpalo::format!(in cx.bump, "click on me: {} {}", app_data.title,app_data.counter1)
+                bumpalo::format!(in cx.bump, "click on me: {} {} {}", app_data.title, app_data.author, app_data.counter1)
                     .into_bump_str(),
             )])
             .on("click", move |root, vdom, _event| {

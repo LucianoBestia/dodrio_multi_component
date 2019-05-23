@@ -18,6 +18,7 @@ use dodrio::{Node, Render};
 // That invalidates the render cache.
 pub struct FooterRenderingComponent {
     author: String,
+    title: String,
     counter3: i32,
 }
 impl FooterRenderingComponent {
@@ -25,6 +26,7 @@ impl FooterRenderingComponent {
         //default values
         let mut footer = Self {
             author: "".to_string(),
+            title: "".to_string(),
             counter3: 0,
         };
         footer.update_cache_from_app_data(app_data);
@@ -39,6 +41,10 @@ impl FooterRenderingComponent {
         let mut retvalue = false;
         if self.author != app_data.author {
             self.author = app_data.author.clone();
+            retvalue = true;
+        }
+        if self.title != app_data.title {
+            self.title = app_data.title.clone();
             retvalue = true;
         }
         if self.counter3 != app_data.counter3 {
@@ -57,7 +63,7 @@ impl Render for FooterRenderingComponent {
         div(bump)
             .children([h1(bump)
                 .children([text(
-                    bumpalo::format!(in bump, "click on me: {} {}", self.author, self.counter3)
+                    bumpalo::format!(in bump, "click on me: {} {} {}", self.author, self.title,self.counter3)
                         .into_bump_str(),
                 )])
                 .on("click", move |root, vdom, _event| {

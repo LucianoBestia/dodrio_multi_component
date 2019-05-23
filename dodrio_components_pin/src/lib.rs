@@ -1,11 +1,7 @@
 //! Learning Rust Wasm/WebAssembly with Virtual Dom Dodrio.
 //! read README.md
 //! use Fold and Unfold regions to better read source code.
-//! this is the classic approach
-//! cannot use `dodrio::cache`. It requires the trait Render for sub Components.
-//! this trait method Render doesn't allow to send `app_data` as parameter.
-//! `app_data` must not be inside of the subComponent because then we have a self-referenced struct.
-//! It is possible to use some other type of cache.
+//! I don't know how to use Pin to have a self referencing struct
 
 //region: Clippy
 #![warn(

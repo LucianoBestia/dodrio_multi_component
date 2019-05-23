@@ -35,7 +35,7 @@ impl Render for FooterRenderingComponent {
         div(bump)
             .children([h1(bump)
                 .children([text(
-                    bumpalo::format!(in bump, "click on me: {} {}", app_data.author, app_data.counter3)
+                    bumpalo::format!(in bump, "click on me: {} {} {}", app_data.author,app_data.title, app_data.counter3)
                         .into_bump_str(),
                 )])
                 .on("click", move |root, vdom, _event| {

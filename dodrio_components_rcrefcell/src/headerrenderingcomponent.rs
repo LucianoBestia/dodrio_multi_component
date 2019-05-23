@@ -35,7 +35,7 @@ impl Render for HeaderRenderingComponent {
         div(bump)
             .children([h1(bump)
                 .children([text(
-                    bumpalo::format!(in bump, "click on me: {} {}", app_data.title,app_data.counter1)
+                    bumpalo::format!(in bump, "click on me: {} {} {}", app_data.title,app_data.author,app_data.counter1)
                         .into_bump_str(),
                 )])
                 .on("click", move |root, vdom, _event| {

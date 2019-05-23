@@ -1,11 +1,9 @@
 //! Learning Rust Wasm/WebAssembly with Virtual Dom Dodrio.
 //! read README.md
 //! use Fold and Unfold regions to better read source code.
-//! this is the approach suggested by fitzgen 2019-05-16
-//! 'Make `AppData` be the root rendering component,'
-//! For less confusion with names I will put the fields of `AppData` inside `RootRenderingComponent`.
-//! My goal is to have reuseable components for other.
-//! On another webpage, the content can change, but the Header and Footer component are the same.  
+//! My goal is to have reuseable and cacheable rendering components.
+//! Header and footer are cached and reused.
+//! Content rendering component is not because it changes often.  
 
 //region: Clippy
 #![warn(

@@ -5,7 +5,7 @@
 //! cannot use `dodrio::cache`. It requires the trait Render for sub Components.
 //! this trait method Render doesn't allow to send `app_data` as parameter.
 //! `app_data` must not be inside of the subComponent because then we have a self-referenced struct.
-//! It is possible to use some other type of cache.
+//! It is possible to use some other type of cache? But then we have the lifetime problem.
 
 //region: Clippy
 #![warn(

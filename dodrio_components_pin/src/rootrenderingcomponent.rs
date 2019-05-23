@@ -34,7 +34,7 @@ impl RootRenderingComponent {
         let app_data = AppData::new();
         let pin_app_data = Box::pin(app_data);
 
-        let header_rendering_component = HeaderRenderingComponent::new();
+        let header_rendering_component = HeaderRenderingComponent::new(pin_app_data.clone());
         let content_rendering_component = ContentRenderingComponent::new();
         let footer_rendering_component = FooterRenderingComponent::new();
 

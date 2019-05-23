@@ -11,8 +11,10 @@ use std::cell::RefCell;
 use std::rc::Rc;
 
 pub struct RootRenderingComponent {
+    //header and footer are cached because they change rarely.
+    //content change often and it does not need cache.
     pub header_rendering_component: Cached<HeaderRenderingComponent>,
-    pub content_rendering_component: Cached<ContentRenderingComponent>,
+    pub content_rendering_component: ContentRenderingComponent,
     pub footer_rendering_component: Cached<FooterRenderingComponent>,
     ///shared mutable data
     pub rc_app_data: Rc<RefCell<AppData>>,
@@ -31,9 +33,9 @@ impl RootRenderingComponent {
         let header_rendering_component = Cached::new(HeaderRenderingComponent {
             rc_app_data: Rc::<std::cell::RefCell<AppData>>::clone(&rc_app_data),
         });
-        let content_rendering_component = Cached::new(ContentRenderingComponent {
+        let content_rendering_component = ContentRenderingComponent {
             rc_app_data: Rc::<std::cell::RefCell<AppData>>::clone(&rc_app_data),
-        });
+        };
         let footer_rendering_component = Cached::new(FooterRenderingComponent {
             rc_app_data: Rc::<std::cell::RefCell<AppData>>::clone(&rc_app_data),
         });
@@ -56,8 +58,7 @@ impl RootRenderingComponent {
         // some reusable changes by the sub RenderingComponent
         self.header_rendering_component.update_counter2();
 
-        //invalidated another component:
-        Cached::invalidate(&mut self.content_rendering_component);
+        //nothing to invalidate. content is not cached.
     }
 
     pub fn update_from_content(&mut self) {
@@ -70,6 +71,8 @@ impl RootRenderingComponent {
         self.content_rendering_component.update_counter3();
 
         //invalidated another component for rerendering
+        //this is a problem to know what change invalidates what component
+        Cached::invalidate(&mut self.header_rendering_component);
         Cached::invalidate(&mut self.footer_rendering_component);
     }
 
@@ -82,7 +85,9 @@ impl RootRenderingComponent {
         //some reusable changes by the sub RenderingComponent
         self.footer_rendering_component.update_counter1();
         //invalidated another component for rerendering
+        //this is a problem to know what change invalidates what component
         Cached::invalidate(&mut self.header_rendering_component);
+        Cached::invalidate(&mut self.footer_rendering_component);
     }
 }
 impl Render for RootRenderingComponent {

@@ -6,12 +6,14 @@ use crate::appdata::AppData;
 use crate::rootrenderingcomponent::RootRenderingComponent;
 
 use dodrio::{bumpalo, Node, RenderContext};
+use std::pin::Pin;
 
-#[derive(Default)]
-pub struct HeaderRenderingComponent {}
+pub struct HeaderRenderingComponent {
+    app_data: Pin<Box<AppData>>,
+}
 impl HeaderRenderingComponent {
-    pub const fn new() -> Self {
-        Self {}
+    pub const fn new(app_data: Pin<Box<AppData>>) -> Self {
+        Self { app_data }
     }
     //updates only app_data
     pub fn update_counter2(&self, app_data: &mut AppData) {

@@ -10,9 +10,10 @@ use dodrio::{Cached, Node, Render};
 
 pub struct RootRenderingComponent {
     app_data: AppData,
-
+    //Header and footer are cached because they rarely change.
+    //content is not cached.
     header_rendering_component: Cached<HeaderRenderingComponent>,
-    content_rendering_component: Cached<ContentRenderingComponent>,
+    content_rendering_component: ContentRenderingComponent,
     footer_rendering_component: Cached<FooterRenderingComponent>,
 }
 
@@ -26,7 +27,7 @@ impl RootRenderingComponent {
     pub fn new() -> Self {
         let app_data = AppData::new();
         let header_rendering_component = Cached::new(HeaderRenderingComponent::new(&app_data));
-        let content_rendering_component = Cached::new(ContentRenderingComponent::new(&app_data));
+        let content_rendering_component = ContentRenderingComponent::new();
         let footer_rendering_component = Cached::new(FooterRenderingComponent::new(&app_data));
 
         Self {
@@ -46,7 +47,7 @@ impl RootRenderingComponent {
         self.header_rendering_component
             .update_counter2(&mut self.app_data);
 
-        //what components need rendering
+        //any component may need re-rendering
         self.invalidate_components();
     }
 
@@ -58,7 +59,7 @@ impl RootRenderingComponent {
         self.content_rendering_component
             .update_counter3(&mut self.app_data);
 
-        //what components need rendering
+        //any component may need re-rendering
         self.invalidate_components();
     }
 
@@ -70,7 +71,7 @@ impl RootRenderingComponent {
         self.footer_rendering_component
             .update_counter1(&mut self.app_data);
 
-        //what components need rendering
+        //any component may need re-rendering
         self.invalidate_components();
     }
 
@@ -83,12 +84,6 @@ impl RootRenderingComponent {
             .update_cache_from_app_data(&self.app_data)
         {
             Cached::invalidate(&mut self.header_rendering_component);
-        }
-        if self
-            .content_rendering_component
-            .update_cache_from_app_data(&self.app_data)
-        {
-            Cached::invalidate(&mut self.content_rendering_component);
         }
         if self
             .footer_rendering_component
@@ -106,7 +101,8 @@ impl Render for RootRenderingComponent {
         div(bump)
             .children([
                 self.header_rendering_component.render(bump),
-                self.content_rendering_component.render(bump),
+                self.content_rendering_component
+                    .render_with_app_data(bump, &self.app_data),
                 self.footer_rendering_component.render(bump),
             ])
             .finish()

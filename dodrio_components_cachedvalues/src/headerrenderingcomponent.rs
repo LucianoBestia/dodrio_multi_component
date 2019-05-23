@@ -18,6 +18,7 @@ use dodrio::{Node, Render};
 // That invalidates the render cache.
 pub struct HeaderRenderingComponent {
     title: String,
+    author: String,
     counter1: i32,
 }
 impl HeaderRenderingComponent {
@@ -25,6 +26,7 @@ impl HeaderRenderingComponent {
         //default values
         let mut header = Self {
             title: "".to_string(),
+            author: "".to_string(),
             counter1: 0,
         };
         header.update_cache_from_app_data(app_data);
@@ -39,6 +41,10 @@ impl HeaderRenderingComponent {
         let mut retvalue = false;
         if self.title != app_data.title {
             self.title = app_data.title.clone();
+            retvalue = true;
+        }
+        if self.author != app_data.author {
+            self.author = app_data.author.clone();
             retvalue = true;
         }
         if self.counter1 != app_data.counter1 {
@@ -57,7 +63,7 @@ impl Render for HeaderRenderingComponent {
         div(bump)
             .children([h1(bump)
                 .children([text(
-                    bumpalo::format!(in bump, "click on me: {} {}", self.title,self.counter1)
+                    bumpalo::format!(in bump, "click on me: {} {} {}", self.title, self.author,self.counter1)
                         .into_bump_str(),
                 )])
                 .on("click", move |root, vdom, _event| {
