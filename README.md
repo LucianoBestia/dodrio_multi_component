@@ -14,6 +14,7 @@ In separate folders I created different working approaches to the same problem:
 - Rc RefCell (good reuse+cache, but runtime borrow checker)
 - cached local values (good reuse+cache, but copying data for cached values)
 - ??maybe Pin<> for self-referencing struct? (I don't know how to do it)
+- Mutex or similar could be a good candidate for shared data?
 ## classic
 It works well until I want to use dodrio::cache. This needs the Render trait. The Render function cannot accept the app_data parameter. Maybe using a different type of cache? Dodrio::cache is not the final version, I think.  
 ## Rc RefCell
