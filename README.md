@@ -87,6 +87,8 @@ The rendering itself does not mutate app_data.
 `cargo install basic-http-server`  
 `cargo install cargo-make`  
 The Makefile.toml is prepared for Windows with Chrome.  
+A little about cargo make:  
+https://medium.com/@sagiegurari/automating-your-rust-workflows-with-cargo-make-part-1-of-5-introduction-and-basics-b19ced7e7057  
 
 ## server and run
 Go into a subfolder for a single approach and  
